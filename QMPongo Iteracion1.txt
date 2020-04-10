@@ -1,0 +1,73 @@
+// POR AHORA CREO QUE UN ATUENDO SE CONFORMA DE LA SIGUIENTE MANERA
+// NO LO AGREGUÉ AL DIAGRAMA PORQUE NO ESTOY MUY SEGURO QUE ASI SEA Y ME GENERA DUDAS
+// LA FORMA DE GRAFICAR ESAS RELACIONES
+
+class Atuendo {
+
+	parteSuperior
+	parteInferior
+	calzado
+	listaDeAccesorios
+
+}
+
+
+// UTILIZO EL PATRON BUILDER PARA CONSTRUIR MI PRENDA DE A POCO Y PODER VALIDAR SUS
+// COMPONENTES A LA HORA DE INSTANCIAR REALMENTE AL OBJETO, LA OTRA OPCION HUBIERA
+// SIDO VALIDAR EN EL CONSTRUCTOR DE LA PRENDA, PERO ESTA OPCION ES MAS  PROLIJA Y
+// ENTENDIBLE, ADEMAS QUE DESACOPLO A LA PRENDA DE UN MONTON DE REGLAS DE SU CONSTRUCCION
+// QUE NO LE INTERESAN
+
+class ConstructorDePrenda {
+
+	String tipo
+	Categoria categoria
+	String tipoDeTela
+	String colorPrimario
+	String colorSecundario
+	
+	validarTipo() {
+		if (not this.categoria.esTipoCompatible(this.tipo)) 
+			throw tipoInvalidoException()
+	}
+	validarDatosObligatorios() {
+		if (tipo == null or categoria == null or tipoDeTela == null or colorPrimario == null)
+			throw faltaDatoObligatorioException()
+	}
+	construir() {
+		validarTipo()
+		validarDatosObligatorios()
+		return new Prenda(this.tipo, this.categoria, this.TipoDeTela, this.colorPrimario, this.colorSecundario)
+	}
+}
+
+// LA PRENDA POR AHORA ME QUEDA SIN COMPORTAMIENTO, PERO  TENDRIA QUE ESTAR  BIEN
+// CONSTRUIDO
+
+class Prenda {
+
+	String tipo
+	Categoria categoria
+	String tipoDeTela
+	String colorPrimario
+	String colorSecundario
+}
+
+// TENIENDO LAS CATEGORIAS DEFINIDAS ME PARECIO MEJOR USAR UN ENUM CON COMPORTAMIENTO
+// NO RECUERDO SI EL METODO ASI DECLARADO FUNCIONA PARA TODOS
+
+Enum Categoria {
+	
+	PARTE_SUPERIOR{
+		listaDeTipos = ["camisa","remera","musculosa"]
+	},PARTE_INFERIOR{
+		listaDeTipos = ["pantalon","pollera","short"]
+	}, CALZADO{
+		listaDeTipos = ["zapatos","ojotas","crocs"]
+	}, ACCESORIO{
+		listaDeTipos = ["pañuelo","anteojos","bolso"]
+	}
+	esTipoCompatible(unTipo) {
+		listaDeTipos.any(unTipo)
+	}
+}
