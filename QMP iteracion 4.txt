@@ -1,0 +1,63 @@
+class Armario {
+  List<Prenda> prendas
+  ClimaService climaService
+
+  void agregarPrenda(Prenda unaPrenda){
+    this.prendas.add(unaPrenda)
+  }
+  Prenda tomarPrendaConTemperaturaAdecuadaDe(Categoria unaCategoria, int unaTemperatura){
+    this.prendas.filter(p => p.getCategoria() == unaCategoria && p.esAdecuada(unaTemperatura)).take(1)
+  }
+  Atuendo getRecomendacion(){
+    int temperaturaActual = this.climaService.getTemperatura()
+    Prenda parteSuperior = tomarPrendaConTemperaturaAdecuadaDe(Categoria.PARTE_SUPERIOR, temperaturaActual)
+    Prenda parteInferior = tomarPrendaConTemperaturaAdecuadaDe(Categoria.PARTE_INFERIOR, temperaturaActual)
+    Prenda calzado = tomarPrendaConTemperaturaAdecuadaDe(Categoria.CALZADO, temperaturaActual)
+    Prenda accesorio = tomarPrendaConTemperaturaAdecuadaDe(Categoria.ACCESORIO, temperaturaActual)
+    return new Atuendo(parteSuperior, parteInferior, calzado, accesorio)
+}
+
+class Atuendo {
+  Prenda parteSuperior
+  Prenda parteInferior
+  Prenda calzado
+  Prenda accesorio
+}
+
+class Prenda {
+  TipoPrenda tipoPrenda
+  int temperaturaMaxima
+
+  boolean esAdecuada(int unaTemperatura) {
+    return unaTemperatura < this.temperaturaMaxima
+  }
+}
+
+interface ClimaService {
+  int getTemperatura()
+}
+
+class ClimaServiceAccuWeather implements ClimaService {
+  int getTemperatura() {
+    AccuWeatherAPI apiClima = new AccuWeatherAPI()
+    List<Map<String, Object>> condicionesClimaticas = apiClima.getWeather(“Buenos Aires, Argentina”)
+    return condicionesClimaticas.get(0).get("Temperature").get("Value") - 32 // Le resto 32 para pasar de °F a °C
+  }
+}
+
+
+class ClimaServiceMock implements ClimaService {
+  int getTemperatura() {
+    return 12
+  }
+}
+
+//TEST
+@Test
+void RecomendacionTest() {
+  Armario armario = new Armario(new ClimaServiceMock)
+  //agrego muchas prendas con distintas temperaturas maximas
+  Assert.assertEquals(new Atuendo(LO ARMO CON LAS PRENDAS QUE DEBERÍA ELEGIR LA RECOMENDACIÓN), armario.getRecomendacion())
+  //Ese assert no anda porque creo que me diria que no son el mismo objeto
+  //Tendria que usar uno que me compare si dos objetos son iguales sin ser el mismo (deepEquals o algo asi??)
+}
