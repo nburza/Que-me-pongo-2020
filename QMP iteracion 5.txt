@@ -1,0 +1,62 @@
+class Usuario {
+  List<Guardarropas> guardarropas
+  void agregarGuardarropas(unGuardarropas) {
+    this.guardarropas.add(unGuardarropas)
+  }
+  //Con esto consigo que varios usuarios apunten al mismo guardarropas y lo compartan
+  void compartirGuardarropas(unGuardarropas, List<Usuario> otrosUsuarios) {
+    otrosUsuarios.forEach(usuario => usuario.agregarGuardarropas(unGuardarropas))
+  }
+  //Tendria que obtener todos los guardarropas de otro usuario y poder seleccionar el que
+  //yo quiera en la interfaz de usuario para hacer la sugerencia
+  void sugerir(Guardarropas unGuardarropas, Sugerencia unaSugerencia) {
+    unGuardarropas.agregarSugerencia(unaSugerencia)
+  }
+}
+
+class Guardarropas {
+  //Lo modelé con Set porque tengo el problema que estaría permitiento que me acepten varias
+  //veces la misma sugerencia y si en teoria el set no me deja agregar el mismo objeto
+  //Igual no estoy seguro si esto lo resuelve
+  Set<Prenda> prendas
+  List<Sugerencia> sugerencias
+  List<Sugerencia> sugerenciasAceptadas
+  
+  void aceptar(unaSugerencia) {
+    this.sugerencias.remove(unaSugerencia)
+    unaSugerencia.hacer(this.prendas)
+    this.sugerenciasAceptadas.add(unaSugerencia)
+  }
+  void rechazar(unaSugerencia) {
+    this.sugerencias.remove(unaSugerencia)
+  }
+  void deshacer(unaSugerencia) {
+    unaSugerencia.deshacer(this.prendas)
+  }
+}
+
+interface Sugerencia {
+  Prenda prenda
+  void hacer(List<Prenda> prendas)
+  void deshacer(List<Prenda> prendas)
+}
+
+class AgregarPrenda implements Sugerencia {
+  Prenda prenda
+  void hacer(List<Prenda> prendas) {
+    prendas.add(this.prenda)
+  }
+  void deshacer(List<Prenda> prendas) {
+    prendas.remove(this.prenda)
+  }
+}
+
+class QuitarPrenda implements Sugerencia {
+  Prenda prenda
+  void hacer(List<Prenda> prendas) {
+    prendas.remove(this.prenda)
+  }
+  void deshacer(List<Prenda> prendas) {
+    prendas.add(this.prenda)
+  }
+}
