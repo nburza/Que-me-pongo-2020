@@ -1,0 +1,94 @@
+class Usuario {
+  ServicioMeteorologico servicioMeteorologico
+  Atuendo sugerenciaDiaria
+  List<Acciones> accionesConfigurables
+  List<Guardarropas> guardarropas
+
+  calcularSugerencia() {
+    this.servicioMeteorologico.getCondicionesClimaticas()
+    //despues de obtener las condiciones hago el calculo de alguna forma
+  }
+  calcularSugerenciaDiaria() {
+    this.sugerenciaDiaria = calcularSugerencia()
+  }
+  recibirAlertasMeteorologicas(List<AlertaMeteorologica> alertasMeteorologicas) {
+    this.accionesConfigurables.forEach(accion => accion.onEvent(this, alertasMeteorologicas))
+  }  
+}
+
+class Empleado {
+  ServicioMeteorologico servicioMeteorologico
+  List<Usuario> usuarios
+  
+  calcularSugerenciasDiarias() {
+    usuarios.forEach(usuario => usuario.calcularSugerenciaDiaria()
+  }
+  boolean hayAlertas(List<AlertaMeteorologica> alertasMeteorologicas) {
+    return !alertasMeteorologicas.isEmpty()
+  }
+  actualizarAlertasMeteorologicas() {    
+    List<AlertaMeteorologica> alertasMeteorologicas this.servicioMeteorologico.getAlertasMeteorologicas()
+    if(hayAlertas(alertasMeteorologicas) {
+      this.usuarios.forEach(usuario => usuario.recibirAlertasMeteorologicas(alertasMeteorologicas)
+    }
+  }
+}
+
+interface ServicioMeteorologico {
+  List<AlertaMeteorologica> getAlertasMeteorologicas()
+  CondicionesClimaticas getCondicionesClimaticas() //un objeto que no me interesa modelar ahora
+}
+
+class ServicioMeteorologicoAccuWeather implements ServicioMeteorologico {
+  List<AlertaMeteorologica> adaptarListaDeAlertas(List<String>) {
+    //convierto una lista de strings a una lista de los enums de mi dominio
+  }
+  List<AlertaMeteorologica> getAlertasMeteorologicas() {
+    AccuWeatherAPI apiClima = new AccuWeatherAPI();
+    Map<String, Object> alertas = apiClima.getAlertas(“Buenos Aires”); 
+    return adaptarListaDeAlertas(alertas.get("CurrentAlerts"));
+  }
+  CondicionesClimaticas getCondicionesClimaticas() {
+    //no me interesa como pero las obtengo y lo traduzco a un objeto de mi dominio
+  }
+}
+
+enum AlertaMeteorologica {
+  String advertencia
+
+  TORMENTA("Llevate un paraguas"), 
+  GRANIZO("Evitá salir en auto")
+}
+
+interface AccionConfigurable {
+  onEvent(List<AlertaMeteorologica> alertasMeteorologicas)
+}
+
+class recibirMail implements AccionConfigurable {
+  String mailDelUsuario
+
+  onEvent(Usuario usuario, List<AlertaMeteorologica> alertasMeteorologicas) {
+    //convertir lista a texto
+    Mailsender mailsender = new Mailsender()
+    mailSender.send(this.mailUsuario, lista convertida)
+  }
+}
+
+class recibirNotificacion implements AccionConfigurable {
+  AlertaMeteorologica alertaEsperada
+
+  onEvent(Usuario usuario, List<AlertaMeteorologica> alertasMeteorologicas) {
+    if(alertasMeteorologicas.contains(this.alertaEsperada) {
+      NotificationService notificador = new NotificationService()
+      notificador.notify(this.alertaEsperada.getAdvertencia())
+    }
+  }
+}
+
+class recalcularSugerenciaDiaria implements AccionConfigurable {
+  onEvent(Usuario usuario, List<AlertaMeteorologica> alertasMeteorologicas) {
+    usuario.calcularSugerenciaDiaria()
+}
+    
+  
+
